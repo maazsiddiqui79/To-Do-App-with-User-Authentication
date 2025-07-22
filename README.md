@@ -1,4 +1,3 @@
-
 ---
 
 # 🔐 To‑Do App with User Authentication
@@ -20,11 +19,23 @@ Deployment to Vercel/Render is in progress. A hosted version will be available s
 
 ### 📸 Screenshots
 
-> *(Add real screenshots in `/static/screenshots/` and reference them here)*
+> _(Add real screenshots in `/static/screenshots/` and reference them here)_
 
-| Register                                     | Dashboard                                      |
-| -------------------------------------------- | ---------------------------------------------- |
-| ![Register](static/screenshots/register.png) | ![Dashboard](static/screenshots/dashboard.png) |
+| Register                                | Dashboard                            |
+| --------------------------------------- | ------------------------------------ |
+| ![Register](static/register%20page.png) | ![Dashboard](static/home%20page.png) |
+
+| Login                                                     | Deleted Tasks                           |
+| --------------------------------------------------------- | --------------------------------------- |
+| ![Register](static/incorrect%20password%20at%20login.png) | ![Dashboard](static/deleted%20task.png) |
+
+| Profile Image 1                         | Profile Image 2                          |
+| --------------------------------------- | ---------------------------------------- |
+| ![Register](static/profile%20page1.png) | ![Dashboard](static/profile%20page3.png) |
+
+| Tasks                         |
+| ----------------------------- |
+| ![Register](static/tasks.png) |
 
 ---
 
@@ -32,10 +43,10 @@ Deployment to Vercel/Render is in progress. A hosted version will be available s
 
 This is the advanced version of my [Go‑Todo Task](https://github.com/maazsiddiqui79/To-Do-List-Web-Application) project, enhanced with:
 
-* Full user authentication (register/login/logout)
-* Secure session handling and password hashing
-* Personal task management per user
-* Persistent data using SQLite
+- Full user authentication (register/login/logout)
+- Secure session handling and password hashing
+- Personal task management per user
+- Persistent data using SQLite
 
 ---
 
@@ -140,12 +151,12 @@ To run the project locally:
 
 ### 📈 Planned Enhancements
 
-* [ ] Host on Render or Vercel
-* [ ] Add password reset feature
-* [ ] Implement task categories and tags
-* [ ] Dark mode toggle
-* [ ] Dashboard UI improvements
-* [ ] Admin panel (future scope)
+- [ ] Host on Render or Vercel
+- [ ] Add password reset feature
+- [ ] Implement task categories and tags
+- [ ] Dark mode toggle
+- [ ] Dashboard UI improvements
+- [ ] Admin panel (future scope)
 
 ---
 
@@ -157,6 +168,5 @@ To run the project locally:
 🔗 GitHub: [github.com/maazsiddiqui79](https://github.com/maazsiddiqui79)
 
 ---
-
 
 Would you like me to generate any of those now?
