@@ -11,8 +11,8 @@ app = Flask(
     static_folder='static')
 
 # ✅ PostgreSQL SQLAlchemy connection string
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://go_todo_database_user:xcb0mg7xwZO3O5G6t8hwYy8O1XghwNGB@dpg-d1pan9mr433s73d6r1jg-a.oregon-postgres.render.com/go_todo_database'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASE.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://go_todo_database_user:xcb0mg7xwZO3O5G6t8hwYy8O1XghwNGB@dpg-d1pan9mr433s73d6r1jg-a.oregon-postgres.render.com/go_todo_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASE.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 
