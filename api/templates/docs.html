@@ -2,6 +2,33 @@
 body %}
 <div class="container mt-4">
   <h2 class="text-center mb-4">📘 How to Use the ToDo App</h2>
+  <br><br>
+  
+  
+  <div class="table-container">
+    <h2>Register & Login</h2>
+    
+    <p><strong>Register:</strong> Create your account by providing a <em>username</em>, <em>email</em>, and <em>password</em>.</p>
+    
+    <p><strong>Login:</strong> Use your registered <em>email</em> and <em>password</em> to securely access your task dashboard.</p>
+    
+    <div class="security-note">
+      <h4>Security Note:</h4>
+      <ul>
+        <li>✅ <strong>Your password is securely hashed</strong>, which means it is never stored in plain text and cannot be retrieved — not even by the developer.</li>
+        <li>❌ <strong>Avoid sharing</strong> your <em>email</em>, <em>password</em>, or <em>username</em> with others.</li>
+        <li>🔒 <strong>Your credentials are protected</strong> following best security practices.</li>
+      </ul>
+    </div>
+  </div>
+  <br><br>
+  
+  
+  
+  
+  
+  
+  
   <div class="table-container">
     <ul>
       <li>
@@ -37,7 +64,7 @@ body %}
       </li>
     </ul>
   </div>
-
+  
   <br><br>
   <div class="wrapper">
     <img
@@ -56,18 +83,20 @@ body %}
     class="img-fluid rounded shadow"
     />
   </div>
-
+  
   <div class="container2 mt-4">
-    <p class="lead">
-      The ToDo App is designed for simplicity and productivity. Whether you're a
-      student, a professional, or just someone who likes staying organized, this
-      app helps you manage tasks quickly and efficiently.
+    
+    <p class="table-container lead" >
+      The ToDo App is designed for simplicity and productivity. Whether you're a student, a professional,<br>
+      or someone who just likes to stay organized, this app helps you manage your daily tasks quickly and efficiently.
+      <br><br>
+        Built using <strong>Flask</strong>, <strong>Bootstrap 5.3</strong>, and
+        custom <strong>CSS</strong>, it provides a clean, responsive UI that works
+        on all devices.
+      
     </p>
-    <p>
-      Built using <strong>Flask</strong>, <strong>Bootstrap 5.3</strong>, and
-      custom <strong>CSS</strong>, it provides a clean, responsive UI that works
-      on all devices.
-    </p>
+    
+    
   </div>
 </div>
 {% endblock %}

@@ -87,7 +87,7 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-links" href="/Profile">Profile</a>
+          <a class="nav-links" href="/about">About</a>
         </li>
 
         {% if not logged_in %}
@@ -101,7 +101,13 @@
         </li>
         {% endif %}
 
+        <li class="nav-item">
+          <a class="nav-links" href="/docs">Docs</a>
+        </li>
         {% if logged_in %}
+        <li class="nav-item">
+          <a class="nav-links" href="/profile">Profile</a>
+        </li>
         <li class="nav-item">
           <a class="nav-links" href="/logout">Logout</a>
         </li>
@@ -111,9 +117,6 @@
             <a class="nav-links" href="/clear">Clear all Task</a>
           </li> -->
 
-        <li class="nav-item">
-          <a class="nav-links" href="/docs">Docs</a>
-        </li>
 
       </ul>
     </div>
