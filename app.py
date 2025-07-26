@@ -7,7 +7,7 @@ from datetime import datetime
 
 app = Flask(
     __name__,
-    template_folder='templates',
+    template_folder='templates', 
     static_folder='static')
 
 # ✅ PostgreSQL SQLAlchemy connection string
