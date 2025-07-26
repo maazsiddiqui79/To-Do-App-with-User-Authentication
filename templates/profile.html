@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}User Profile{% endblock %}
+
+{% block body %}
+
+<div class="d-flex justify-content-center p-3 my-4">
+    <div class="container mt-1 mb-4">
+        <h2>User's Data</h2>
+        <br>
+
+    <p style="font-size:x-large;">Username:  <strong>{{username}}</strong></p>
+    <p style="font-size:x-large;">Email:  <strong>{{email}}</strong></p>
+    <p style="font-size:x-large;">Password: <strong>{{password[0]}}{{ '*' * (password|length - 3) }}{{password[-2:]}}</strong></p>
+
+    
+    
+
+    <a href="/logout"><button type="button" class="btn btn-dark px-4 d-flex mr-2 mb-2">Logout</button></a>
+
+  </div>
+</div>
+
+{% endblock %}
