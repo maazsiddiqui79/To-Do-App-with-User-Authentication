@@ -1,11 +1,17 @@
 services:
   - type: web
-    name: flask-login-app
+    name: go-todo-task
     env: python
-    buildCommand: ""
+    region: oregon  # or "frankfurt" for EU region
+
+    buildCommand: |
+      echo "python-3.11.9" > runtime.txt
+      pip install -r requirements.txt
+
     startCommand: gunicorn app:app
+
     envVars:
       - key: FLASK_ENV
         value: production
       - key: DATABASE_URL
-        value: your-postgresql-db-url
+        value: postgresql+psycopg://go_todo_task_db_user:z3YSJb1og6V5aDVXuJqv9Kgsn7VgBpTO@dpg-d20liqndiees739m4op0-a.oregon-postgres.render.com/go_todo_task_db
