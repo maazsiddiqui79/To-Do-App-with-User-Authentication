@@ -183,6 +183,10 @@ User authentication (register/login/logout)
 # 🧑‍💻 Author
 
 **Maaz Siddiqui**
+
+
 🎓 Diploma in Computer Engineering
+
 🔗 GitHub: [github.com/maazsiddiqui79](https://github.com/maazsiddiqui79)
+
 💻 Passionate about backend systems and clean UI design
