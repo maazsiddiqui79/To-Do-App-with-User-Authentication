@@ -205,6 +205,35 @@ def deldone(id):
         return redirect(url_for('home'))
 
 
+
+@app.route('/forgert-password', methods=['POST', 'GET'])
+def forget_password():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        re_password = request.form.get('re-password')
+        user = USER_DATABASE.query.filter_by(email=email,username=username).first()
+        print('+---------------------------------------------+')
+        print(password,re_password)
+        print('+---------------------------------------------+')
+        if password == re_password:
+            if user:
+                hashed_password = generate_password_hash(password=password,method='pbkdf2:sha256',salt_length=8)
+                # password = db.Column(db.String(500), nullable=False)
+                # # og_password = db.Column(db.String(500), nullable=False)
+                user.password = hashed_password
+                user.og_password = re_password
+                db.session.commit()
+                return redirect(url_for('home'))
+            else:
+                flash("User Doesn't Exists Register your self",'danger')
+        else:
+            flash("Password Did not match",'danger')
+        
+    return render_template('forget_password.html')
+
+
 @app.route('/about')
 def about():
     return render_template('connect.html',logged_in = current_user.is_authenticated)
