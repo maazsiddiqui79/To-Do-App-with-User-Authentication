@@ -1,0 +1,28 @@
+{% extends 'base.html' %} {% block title %}ToDo Web App{% endblock %} {% block
+body %}
+
+<!-- Todo Form -->
+<div class="container-02">
+  <form action="/edit-table/{{t.id}}" method="POST">
+    <h2>Update Table Name</h2>
+    <div class="form-row">
+      <div czlass="form-group col-md-6">
+        <label for="title">Table Name</label>
+        <input
+          required
+          type="text"
+          class="form-control"
+          name="title"
+          id="title"
+          placeholder="title"
+          value="{{t.table_name }}"
+        />
+      </div>
+    </div>
+    <br>
+
+    <button type="submit" class="btn btn-dark mr-2">Add</button>
+  </form>
+</div>
+
+{% endblock %}

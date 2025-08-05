@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for,flash
+from flask import Flask, render_template, request, redirect, url_for,flash , session
 from flask_sqlalchemy import SQLAlchemy
+from sqlite3 import IntegrityError
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user , login_required
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import random
 
 app = Flask(
     __name__,
@@ -11,8 +13,8 @@ app = Flask(
     static_folder='static')
 
 # ✅ PostgreSQL SQLAlchemy connection string
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg://go_todo_task_db_user:z3YSJb1og6V5aDVXuJqv9Kgsn7VgBpTO@dpg-d20liqndiees739m4op0-a.oregon-postgres.render.com/go_todo_task_db'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASE.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg://go_todo_task_db_user:z3YSJb1og6V5aDVXuJqv9Kgsn7VgBpTO@dpg-d20liqndiees739m4op0-a.oregon-postgres.render.com/go_todo_task_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASE.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'my-very-very-ultra-secret-top-confidential-highly-predicted-secret-key'
 
@@ -25,24 +27,35 @@ class USER_DATABASE(db.Model,UserMixin):
     email = db.Column(db.String(500), unique=True)
     password = db.Column(db.String(500), nullable=False)
     og_password = db.Column(db.String(500), nullable=False)
-
+    
+    
 class Todo(db.Model,UserMixin):
     __tablename__ = 'Todo'
     sno = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    content = db.Column(db.String(500), nullable=False)
+    title = db.Column(db.String(200), nullable=False) #
+    content = db.Column(db.String(500), nullable=False) #
     user_email = db.Column(db.String(200), nullable=False)
     date = db.Column(db.String, default=str(datetime.utcnow()).split(' ')[0])
-    priority = db.Column(db.String(10), default='Low', nullable=False)
+    priority = db.Column(db.String(10), default='Low', nullable=False) 
+    table_name = db.Column(db.String(200), nullable=False) #
 
 class DeletedTodo(db.Model,UserMixin):
-    __tablename__ = ' Deleted_Todo'
+    __tablename__ = 'Deleted_Todo'
+    
     id = db.Column(db.Integer, primary_key=True)
     sno = db.Column(db.Integer, nullable=False)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.String(500), nullable=False)
     date = db.Column(db.String, default=str(datetime.utcnow()).split(' ')[0])
     user_email = db.Column(db.String(200), nullable=False)
+    table_name = db.Column(db.String(200), nullable=False)
+    
+class ALL_TABLE_LIST(db.Model,UserMixin):
+    __tablename__ = 'All_Table_List'
+    id = db.Column(db.Integer, primary_key=True)
+    user_email = db.Column(db.String(200), nullable=False)
+    table_name = db.Column(db.String(200), nullable=False)
+    
     
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -63,32 +76,76 @@ def load_user(user_id):
 def home():
     priority_order = {"High": 1, "Medium": 2, "Low": 3}
 
-    if request.method == 'POST':
-        title = request.form.get('title')
-        desc = request.form.get('desc')
-        if title and desc:
-            to_do = Todo(title=title, content=desc, user_email=current_user.email)
-            db.session.add(to_do)
-            db.session.commit()
+    # Initialize with default values to avoid unbound local variable errors
+    all_todo = []
+    del_all_todo = []
+    all_table = []
+    print(session)
 
+    # POST: Add a new todo
+    if request.method == 'POST':
+        # if session['TABLE_NAME'] is None or " ":
+        #     flash('SELECT A TABLE FIRST', 'warning')
+            
+        if current_user.is_authenticated and ('TABLE_NAME' in session )or (session['TABLE_NAME'] is not None):
+            table = session['TABLE_NAME']
+            title = request.form.get('title')
+            desc = request.form.get('desc')
+            table_name=session['TABLE_NAME']
+            if not table_name:
+                flash("Session expired. Please select a table.",'warning')
+                return redirect(url_for('home'))
+            if title and desc:
+                to_do = Todo(
+                    title=title,
+                    content=desc,
+                    user_email=current_user.email,
+                    table_name=table_name
+                )
+                try:
+                    db.session.add(to_do)
+                    db.session.commit()
+                    return redirect(url_for('home'))
+                except IntegrityError as e:
+                    flash(f'ERROR Integrity Error: {e}','danger')
+        else:
+            flash('SELECT A TABLE FIRST', 'warning')
+
+    # GET: Load todos and deleted todos for current user
     if current_user.is_authenticated:
         all_todo = Todo.query.filter_by(user_email=current_user.email).all()
+        all_table = ALL_TABLE_LIST.query.filter_by(user_email=current_user.email).all()
         all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
         del_all_todo = DeletedTodo.query.filter_by(user_email=current_user.email).all()
+
+    # Render with or without table selected
+    if current_user.is_authenticated and 'TABLE_NAME' in session:
+        
         return render_template(
             'index.html',
             all_todo=all_todo,
             deltodo=del_all_todo,
             current_user=current_user.email,
-            logged_in=current_user.is_authenticated
+            logged_in=True,
+            table=session['TABLE_NAME'],
+            all_table=all_table
         )
-
-    return render_template(
-        'index.html',
-        all_todo=[],
-        deltodo=[],
-        logged_in=current_user.is_authenticated
-    )
+    elif current_user.is_authenticated:
+        return render_template(
+            'index.html',
+            all_todo=all_todo,
+            deltodo=del_all_todo,
+            current_user=current_user.email,
+            logged_in=True,
+            all_table=all_table
+        )
+    else:
+        return render_template(
+            'index.html',
+            all_todo=[],
+            deltodo=[],
+            logged_in=False
+        )
 
 
 @app.route('/done/<int:id>', methods=['POST', 'GET'])
@@ -99,18 +156,19 @@ def done(id):
             sno=user_to_delete.sno,
             title=user_to_delete.title,
             content=user_to_delete.content,
-            user_email = user_to_delete.user_email
+            user_email = user_to_delete.user_email,
+            table_name=session.get('TABLE_NAME') if current_user.is_authenticated else ''
         )
         db.session.add(deleted_entry)
         db.session.delete(user_to_delete)
         db.session.commit()
     priority_order = {"High": 1, "Medium": 2, "Low": 3}
-    all_todo = Todo.query.all()
-    all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
+    # all_todo = Todo.query.all()
+    # all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
             
-    del_all_todo = DeletedTodo.query.all()
+    # del_all_todo = DeletedTodo.query.all()
         
-    return render_template('index.html', all_todo=all_todo, deltodo=del_all_todo,current_user=current_user.email,logged_in = current_user.is_authenticated)
+    return redirect(url_for('home'))
 
 @app.route('/edit/<int:id>', methods=['POST', 'GET'])
 def edit(id):
@@ -122,12 +180,12 @@ def edit(id):
         user_to_update.content = desc
         db.session.commit()
         priority_order = {"High": 1, "Medium": 2, "Low": 3}
-        all_todo = Todo.query.all()
-        all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
+        # all_todo = Todo.query.all()
+        # all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
             
-        del_all_todo = DeletedTodo.query.all()
+        # del_all_todo = DeletedTodo.query.all()
         
-        return render_template('index.html', all_todo=all_todo, deltodo=del_all_todo,current_user=current_user.email,logged_in = current_user.is_authenticated)
+        return redirect(url_for('home'))
         
     user_to_update = Todo.query.filter_by(sno=id).first()
     return render_template('update.html', todo=user_to_update,logged_in = current_user.is_authenticated)
@@ -139,12 +197,12 @@ def deldone(id):
         db.session.delete(user_to_delete)
         db.session.commit()
         priority_order = {"High": 1, "Medium": 2, "Low": 3}
-        all_todo = Todo.query.all()
-        all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
+        # all_todo = Todo.query.all()
+        # all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
             
-        del_all_todo = DeletedTodo.query.all()
+        # del_all_todo = DeletedTodo.query.all()
         
-        return render_template('index.html', all_todo=all_todo, deltodo=del_all_todo,current_user=current_user.email,logged_in = current_user.is_authenticated)
+        return redirect(url_for('home'))
 
 
 @app.route('/about')
@@ -165,13 +223,13 @@ def login():
         if check_user_exist:
             if check_password_hash(check_user_exist.password,password):
                 login_user(user=check_user_exist)    
-                priority_order = {"High": 1, "Medium": 2, "Low": 3}
-                all_todo = Todo.query.all()
-                all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
+                # priority_order = {"High": 1, "Medium": 2, "Low": 3}
+                # all_todo = Todo.query.all()
+                # all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
             
-                del_all_todo = DeletedTodo.query.all()
+                # del_all_todo = DeletedTodo.query.all()
         
-                return render_template('index.html', all_todo=all_todo, deltodo=del_all_todo,current_user=current_user.email,logged_in = current_user.is_authenticated)
+                return redirect(url_for('home'))
             else:
                  flash('Incorrect password. Please try again.', 'warning')
         else:
@@ -201,13 +259,13 @@ def register():
                 db.session.commit()
                 login_user(new_user)
                 
-                priority_order = {"High": 1, "Medium": 2, "Low": 3}
-                all_todo = Todo.query.all()
-                all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
+                # priority_order = {"High": 1, "Medium": 2, "Low": 3}
+                # all_todo = Todo.query.all()
+                # all_todo = sorted(all_todo, key=lambda x: priority_order.get(x.priority, 4))
             
                 del_all_todo = DeletedTodo.query.all()
         
-                return render_template('index.html', all_todo=all_todo, deltodo=del_all_todo,current_user=current_user.email,logged_in = current_user.is_authenticated)
+                return redirect(url_for('home'))
             except:
                 db.session.rollback()
                 flash('An unexpected error occurred during registration. Please try again later.', 'danger')
@@ -218,6 +276,7 @@ def register():
 @app.route('/logout')
 @login_required
 def logout():
+    session['TABLE_NAME'] = ' '
     logout_user()
     return redirect(url_for('home',logged_in = current_user.is_authenticated))
 
@@ -255,7 +314,60 @@ def priority(prior,id):
             
         del_all_todo = DeletedTodo.query.all()
         
-    return render_template('index.html', all_todo=all_todo, deltodo=del_all_todo,current_user=current_user.email,logged_in = current_user.is_authenticated)
+    return redirect(url_for('home'))
+
+
+
+
+    
+@app.route('/table/<table_name_selected>')
+@login_required
+def table(table_name_selected):
+    session['TABLE_NAME'] = table_name_selected
+    return redirect(url_for('home'))
+
+
+@app.route('/add-table')
+@login_required
+def add_table():
+    t = random.choices('qwertyuiopasdfghjklzxcvbnm',k=5)
+    x= ''.join(t)
+    new_table = ALL_TABLE_LIST(user_email=current_user.email,table_name=x)
+    db.session.add(new_table)
+    db.session.commit()
+    return redirect(url_for('home'))
+
+
+@app.route('/delete-table/<int:id>')
+@login_required
+def delete_table(id):
+    new_table = ALL_TABLE_LIST.query.filter_by(id=id).first()
+    todos = Todo.query.filter_by(table_name=new_table.table_name)
+    print(todos)
+    # db.session.delete(todos)
+    # db.session.commit()
+    
+    db.session.delete(new_table)
+    db.session.commit()
+    session['TABLE_NAME'] = None
+    return redirect(url_for('home'))
+
+
+@app.route('/edit-table/<int:id>',methods=["GET","POST"])
+@login_required
+def edit_table(id):
+    new_table = ALL_TABLE_LIST.query.filter_by(id=id).first()
+    if request.method == 'POST':
+        name = request.form.get('title')    
+        new_table.table_name = name
+        db.session.commit()  
+        return redirect(url_for('home'))
+          
+    
+    return render_template('edit_table.html',t=new_table)
+
+
+
 
 
 # Create database tables if they don't exist (runs once)
