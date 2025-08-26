@@ -13,8 +13,8 @@ app = Flask(
     static_folder='static')
 
 # ✅ PostgreSQL SQLAlchemy connection string
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg://maaz_sidd:26bgYVIRdA2P5mPUuE0L6BduGEs9ek3R@dpg-d28l1q7diees73f299kg-a:5432/go_todo_task_db_j0d4'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASE.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg://maaz_sidd:26bgYVIRdA2P5mPUuE0L6BduGEs9ek3R@dpg-d28l1q7diees73f299kg-a:5432/go_todo_task_db_j0d4'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASE.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'my-very-very-ultra-secret-top-confidential-highly-predicted-secret-key'
 
@@ -29,7 +29,7 @@ class USER_DATABASE(db.Model,UserMixin):
     og_password = db.Column(db.String(500), nullable=False)
     
     
-class Todo(db.Model,UserMixin):
+class Todo(db.Model):
     __tablename__ = 'Todo'
     sno = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False) #
@@ -39,7 +39,7 @@ class Todo(db.Model,UserMixin):
     priority = db.Column(db.String(10), default='Low', nullable=False) 
     table_name = db.Column(db.String(200), nullable=False) #
 
-class DeletedTodo(db.Model,UserMixin):
+class DeletedTodo(db.Model):
     __tablename__ = 'Deleted_Todo'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -50,7 +50,7 @@ class DeletedTodo(db.Model,UserMixin):
     user_email = db.Column(db.String(200), nullable=False)
     table_name = db.Column(db.String(200), nullable=False)
     
-class ALL_TABLE_LIST(db.Model,UserMixin):
+class ALL_TABLE_LIST(db.Model):
     __tablename__ = 'All_Table_List'
     id = db.Column(db.Integer, primary_key=True)
     user_email = db.Column(db.String(200), nullable=False)
