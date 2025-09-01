@@ -31,16 +31,19 @@
           {% set x = namespace(value=0) %}
           {% for i in all_table %}
           {% if i.user_email == current_user %}
-          <tr>
+          {% if table == i.table_name %}
+
+          <tr >
             {% set x.value = x.value + 1 %}
-            <th scope="row">{{ x.value }}</th>
-            <td><a href="/table/{{ i.table_name }}">{{ i.table_name }}</a></td>
-            <td>
+            <th style="background-color: rgb(223, 225, 244);" scope="row">{{ x.value }}</th>
+            <td style="background-color: rgb(223, 225, 244);"><a style="color:black;text-decoration:underline" href="/table/{{ i.table_name }}">{{ i.table_name }}</a></td>
+            <td style="background-color: rgb(223, 225, 244);">
               <div class="dropdown-center">
                 <button class="btn btn-dark px-4  mr-2 mb-2 dropdown-toggle" type="button" data-toggle="dropdown"
                   aria-expanded="false">
                   Edit
                 </button>
+                
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="/edit-table/{{i.id}}">Rename</a></li>
                   <li><a class="dropdown-item" href="/delete-table/{{i.id}}">Delete</a></li>
@@ -48,6 +51,29 @@
               </div>
             </td>
           </tr>
+          
+          {% else %}
+          <tr >
+            {% set x.value = x.value + 1 %}
+            <th scope="row">{{ x.value }}</th>
+            <td><a style="text-decoration:none" href="/table/{{ i.table_name }}">{{ i.table_name }}</a></td>
+            <td>
+              <div class="dropdown-center">
+                <button class="btn btn-dark px-4  mr-2 mb-2 dropdown-toggle" type="button" data-toggle="dropdown"
+                  aria-expanded="false">
+                  Edit
+                </button>
+                
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/edit-table/{{i.id}}">Rename</a></li>
+                  <li><a class="dropdown-item" href="/delete-table/{{i.id}}">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          
+          
+          {% endif %}
           {% endif %}
           {% endfor %}
         </tbody>
@@ -61,12 +87,30 @@
 <div class="d-flex justify-content-center p-3 my-4">
   <div class="container mt-5 mb-4">
     <form action="/" method="POST">
-      <h2 class="mb-3">Add Todo</h2>
+       <div class="row">
+    <div class="col-5">
+      <h2 class="mb-3">
+        {% if table == None %}
+        No Table Selected
+        {% else %}
+        Add Todo in {{table}}
+        {% endif %}
+        
+      </h2>
+    </div>
+    <div class="col-7">
+      <div class="alert alert-info" role="alert">
+        ⚠ Warning: Please add and select a table first. Otherwise data will not be saved.
+        
+      </div>
+    </div>
+  </div>
       {% include 'FLASH.html' %}
       {% if logged_in %}
       <div class="form-row">
         <div class="form-group col-md-6 mb-3">
           <label for="title">Todo Title</label>
+          
           <input required type="text" class="form-control" name="title" id="title" placeholder="title" />
         </div>
       </div>
@@ -77,6 +121,13 @@
       </div>
       <button type="submit" class="addbt btn btn-dark mb-3">ADD</button>
       {% else %}
+      <div class="d-flex justify-content-center p-3  mt-1 mb-4">
+  
+    <h2 class="alert alert-dark mt-4" role="alert" style="background-color: rgba(0, 21, 255, 0.087);"> Log in or Sign up
+      now to — Manage, Update, and Track your tasks </h2>
+  
+</div>
+
       <div class="form-row">
         <div class="form-group col-md-6 mb-3">
           <label for="title">Todo Title</label>
@@ -89,7 +140,9 @@
           disabled></textarea>
       </div>
       <button type="submit" class="addbt btn btn-dark mb-3" disabled>ADD</button>
+      
       {% endif %}
+      
     </form>
   </div>
 </div>
@@ -99,7 +152,13 @@
 
 {% if logged_in %}
 <div class="container mt-1 mb-4">
-  <h2 class="mb-4">Your {{table}} Todo's</h2>
+  <h2 class="mb-4">
+    {% if table == None %}
+    No Table Selected
+    {% else %}
+    Your {{table}} Todo's
+    {% endif %}
+  </h2>
   <div class="table-responsive">
     <table class="table table-striped table-hover mb-4">
       <thead class="thead-light">
@@ -199,5 +258,11 @@
   </div>
 </div>
 {% endif %}
+<script>
+    if (window.history.replaceState) {
+      window.history.replaceState(null, null, window.location.href);
+    }
+  </script>
+
 
 {% endblock %}
