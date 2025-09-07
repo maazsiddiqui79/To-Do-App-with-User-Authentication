@@ -14,7 +14,8 @@ app = Flask(
 
 # ✅ PostgreSQL SQLAlchemy connection string
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg://maaz_sidd:26bgYVIRdA2P5mPUuE0L6BduGEs9ek3R@dpg-d28l1q7diees73f299kg-a:5432/go_todo_task_db_j0d4'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASES.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASES.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql+psycopg2://postgres.odadsmvjsofuvjpiigxj:maaz1234567890MAAZ@aws-1-ap-south-1.pooler.supabase.com:5432/postgres"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'my-very-very-ultra-secret-top-confidential-highly-predicted-secret-key'
 
@@ -59,7 +60,47 @@ class ALL_TABLE_LIST(db.Model):
     
 @app.errorhandler(Exception)
 def handle_exception(e):
-    return f"Error: {str(e)}", 500
+    return f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <style>
+        body {{
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }}
+        h1 {{
+            font-size: 3.5rem;
+            color: #000;
+            margin-bottom: 1rem;
+            border-bottom: #000 solid 3px;
+        }}
+        p {{
+            font-size: 1.2rem;
+            color: #333;
+            max-width: 600px;
+        }}
+    </style>
+</head>
+<body>
+    <h1>Error</h1>
+    
+    <p>{str(e)}</p>
+    <p><a href="/">Go To Home</a></p>
+</body>
+</html>
+""", 500
+
     
 # set up flask login 
 login_manager = LoginManager()
@@ -133,15 +174,15 @@ def home():
         del_all_todo = DeletedTodo.query.filter_by(user_email=current_user.email).all()
         if session.get("TABLE_NAME") in (None, "None", "", " "):
             try:
-                xt = all_table[0]
-                x=vars(xt)['table_name']
-                session['TABLE_NAME'] = x
+                if all_table:
+                    xt = all_table[0]
+                    x=vars(xt)['table_name']
+                    session['TABLE_NAME'] = x
+                else:
+                    session['TABLE_NAME'] = None
             except Exception as e :
-                # return redirect(url_for('docs'))
                 pass
-           
-
-    # Render with or without table selected
+            
     if current_user.is_authenticated and 'TABLE_NAME' in session:
         return render_template(
             'index.html',
@@ -229,7 +270,7 @@ def deldone(id):
 
 
 
-@app.route('/forgert-password', methods=['POST', 'GET'])
+@app.route('/forget-password', methods=['POST', 'GET'])
 def forget_password():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -331,10 +372,16 @@ def logout():
 
 @app.route('/profile')
 def profile():
-    return render_template('profile.html',logged_in = current_user.is_authenticated,
-                           username = current_user.username,
-                           email=current_user.email,
-                           password=current_user.og_password)
+    if current_user.is_authenticated:
+        
+        return render_template('profile.html',logged_in = True,
+                            username = current_user.username,
+                            email=current_user.email,
+                            password=current_user.og_password)
+    else:
+        return render_template('profile.html',logged_in = False,)
+    
+
     
 @app.route('/priority/<prior>/<int:id>')
 def priority(prior,id):
@@ -427,10 +474,18 @@ def delete_table(id):
 def edit_table(id):
     new_table = ALL_TABLE_LIST.query.filter_by(id=id).first()
     if request.method == 'POST':
+        old_table_name = new_table.table_name
+        print(old_table_name)
         name = request.form.get('title')    
         new_table.table_name = name
         db.session.commit()  
-        return redirect(url_for('home'))
+        try:
+            todoo = Todo.query.filter_by(table_name=old_table_name).update({"table_name":name})
+            deltodoo = DeletedTodo.query.filter_by(table_name=old_table_name).update({"table_name": name})
+            db.session.commit()  
+        except :
+            pass
+        return redirect(f'/table/{name}')
           
     
     return render_template('edit_table.html',t=new_table)
