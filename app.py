@@ -12,11 +12,13 @@ app = Flask(
     template_folder='templates',
     static_folder='static')
 
-# ✅ PostgreSQL SQLAlchemy connection string
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg://maaz_sidd:26bgYVIRdA2P5mPUuE0L6BduGEs9ek3R@dpg-d28l1q7diees73f299kg-a:5432/go_todo_task_db_j0d4'
+
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASES.db'
-# app.config['SQLALCHEMY_DATABASE_URI'] = "postgres+psycopg2://postgres.odadsmvjsofuvjpiigxj:maaz1234567890MAAZ@aws-1-ap-south-1.pooler.supabase.com:5432/postgres"
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql+psycopg2://postgres:maaz1234567890MAAZ@db.txscflsdnrtmtpzqueyy.supabase.co:5432/postgres"
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "postgresql+psycopg2://postgres:maaz1234567890MAAZ"
+    "@db.woagryhkugkziiknyvxw.supabase.co:5432/postgres"
+)
+
 # DATABASE_URL = f"postgresql+psycopg2://postgres:maaz1234567890MAAZ@db.txscflsdnrtmtpzqueyy.supabase.co:5432/postgres"
 
 
