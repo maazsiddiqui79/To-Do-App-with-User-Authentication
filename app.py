@@ -14,12 +14,15 @@ app = Flask(
 
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DATA_BASES.db'
-user='postgres' 
-password='maaz1234567890MAAZ'
-host='db.txscflsdnrtmtpzqueyy.supabase.co '
-port='5432'
-dbname='postgres'
+host="db.qbliadladewfalthjhup.supabase.co"
+port=5432
+database="postgres"
+user="postgres"
+dbname="postgres"
+password= "maaz1234567890MAAZ"
 app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}?sslmode=require"
+# app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}?sslmode=require"
+
 
 # DATABASE_URL = f"postgresql+psycopg2://postgres:maaz1234567890MAAZ@db.txscflsdnrtmtpzqueyy.supabase.co:5432/postgres"
 
